@@ -40,6 +40,7 @@ public class NettyServer {
                     // 设置保持连接状态
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     // 给我们 workerGroup 的 eventLoop 对应的管道设置处理器
+                    // 这个 childHandler 是专门给 workerGroup 用的，相应的 .handler() 方法，是给 bossGroup 加处理器的
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         // 向这个 workerGroup 关联的 pipeline 里面增加一个 handler
                         @Override
