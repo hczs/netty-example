@@ -2,6 +2,7 @@ package icu.sunnyc.simple;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -43,6 +44,8 @@ public class NettyServer {
                         // 向这个 workerGroup 关联的 pipeline 里面增加一个 handler
                         @Override
                         protected void initChannel(SocketChannel ch) {
+                            // 这个 SocketChannel 就是对应每个客户端的 SocketChannel
+                            // 这里可以使用集合管理所有 SocketChannel，在需要时取出来，进行操作，例如异步的向各个客户端推送消息
                             // 加入我们自定义的 handler
                             ch.pipeline().addLast(new NettyServerHandler());
                         }
@@ -51,16 +54,22 @@ public class NettyServer {
             // 绑定一个端口 这就相当于服务端启动了
             ChannelFuture channelFuture = serverBootstrap.bind(9090).sync();
 
+            channelFuture.addListener((ChannelFutureListener) future -> {
+                if (future.isSuccess()) {
+                    System.out.println("服务端已启动，监听端口：9090");
+                } else {
+                    System.out.println("服务端启动失败！，监听端口：9090");
+                }
+            });
+            // 会先打印这一行，再输出 服务端已启动，表示确实是异步的，而不是同步的
+            System.out.println("----------------");
             // 对关闭通道进行监听
             channelFuture.channel().closeFuture().sync();
-
-            System.out.println("服务端已启动，监听端口：9090");
         } finally {
             // 优雅关闭
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
-
 
     }
 }
