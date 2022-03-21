@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form onsubmit="return false">
+        <textarea name="message" style="height: 300px; width: 300px"></textarea>
+        <input type="button" value="发送消息" onclick="send(this.form.message.value)">
+        <textarea id="responseText" style="height: 300px; width: 300px"></textarea>
+        <input type="button" value="清空内容" onclick="document.getElementById('responseText').value=''">
+    </form>
+
+    <script>
+        let socket;
+        // 判断当前浏览器是否支持 websocket
+        if (window.WebSocket) {
+            socket = new WebSocket('ws://127.0.0.1:9090/hello');
+            // 收到服务器端发送的消息事件处理
+            socket.onmessage = function (res) {
+                let responseText = document.getElementById('responseText')
+                responseText.value = responseText.value + '\n' + res.data
+            }
+
+            // 当成功连接到服务器的时候，触发此事件
+            socket.onopen = function (res) {
+                let responseText = document.getElementById('responseText')
+                responseText.value = '成功连接到服务器！'
+            }
+
+            // 连接关闭触发此事件
+            socket.onclose = function (res) {
+                let responseText = document.getElementById('responseText')
+                responseText.value = responseText.value + '\n' + '连接关闭！'
+            }
+        } else {
+            alert("您的浏览器不支持 websocket")
+        }
+        // 发送消息到服务器
+        function send(message) {
+            if (socket.readyState === WebSocket.OPEN) {
+                console.log('正在发送消息：' + message)
+                // 通过 socket 发送消息
+                socket.send(message)
+            } else {
+                alert('连接未开启！')
+            }
+        }
+    </script>
+</body>
+</html>
