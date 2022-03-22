@@ -6,3 +6,4 @@
 - `icu.sunnyc.groupchat:` Netty 实现群聊
 - `icu.sunnyc.heartbeat:` Netty 心跳机制
 - `icu.sunnyc.websocket:` Netty websocket
+- `icu.sunnyc.codec:` 使用 Protocol Buffers 序列化数据并进行传输（编解码）
