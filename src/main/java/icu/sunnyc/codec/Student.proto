@@ -1,0 +1,37 @@
+syntax = "proto3";  // 表示 protobuf 协议的版本
+option optimize_for = SPEED;  // 加快解析
+option java_package = "icu.sunnyc.codec";  // 指定生成到哪个包下
+option java_outer_classname = "MyDataInfo";  // 生成 Java 的外部类名，也是 生成的 java 文件名
+
+
+// protobuf 使用 message 来管理其他 message
+message MyMessage {
+    // 定义一个枚举 DataType 可选 StudentType 或 TeacherType 来表示传输的是哪个数据类型
+    enum DataType {
+        STUDENT_TYPE = 0;  // 这个编号必须从 0 开始
+        TEACHER_TYPE = 1;
+    }
+
+    // 使用 data_type 属性来表示是传的哪个枚举类型
+    DataType data_type = 1;
+
+    // 每次只能传其中一个类型
+    oneof DataBody {
+        Student student = 2;
+        Teacher teacher = 3;
+    }
+
+}
+
+// protobuf 以 message 的形式管理数据，这个 Student 是 StudentPOJO 的内部类，真正使用的实体类对象
+message Student {
+    // 表名 Student 类中会有一个属性，名叫 id，类型为 （protobuf 的 int32 对应 java的 int） 后面这个 1 不代表值，代表此属性的序号
+    int32 id = 1;
+    string name = 2;
+}
+
+// 再来个实体类，测试多种数据类型传输
+message Teacher {
+    string name = 1;
+    string subject = 2;
+}
